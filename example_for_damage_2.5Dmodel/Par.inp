@@ -1,0 +1,75 @@
+# Example: slip weakening fault inside a low-velocity medium 
+# mise en place for the 2018 Palu earthquake.
+
+# Model ppts:
+# * symmetric model wrt x=0.
+# * elasticity as rheology.
+# * 2.5D approximation to consider seismogenic zone W=12 km=30Lc; 
+# where Lc=400 m.
+# * GLL number = 5 (instead of 9), and dt is higher
+# to gain some time just for this test.
+# * width of LVFZ (low-velocity fault zone)= 2Lc (between z=[-1Lc,+1Lc])
+# * relative velocity reduction is 30 %.
+#
+# Elif
+
+
+
+#----- General parameters ----------------
+&GENERAL iexec=1, ngll=5, fmax=1d0 , ndof=2 , W=30d0,
+  title = 'Slip-weakening dynamic rupture', verbose='1011' , ItInfo = 1000 /
+
+
+
+#----- Build the mesh ---------------------------
+# with fault layer for Kelvin-Voigt material
+&MESH_DEF  method = 'LAYERED' /
+# "fztag=2" sets tag=2 on the elements next to the fault
+# the rest of the domain gets tag=1 by default
+&MESH_LAYERED ezflt=-1, fztag=2, xlim=0d0,40d0, 
+           zmin=-30d0, nx=320, file='layers'/
+# layers file format: z-coord; element number; material number
+
+
+#---- Material parameters --------------
+# Low-velocity damage zone (30% of relative reduction)
+&MATERIAL tag=1, kind='ELAST' /
+&MAT_ELASTIC rho=1d0, cp=1.21247d0, cs=0.7d0 /
+
+# Low-velocity damage zone with 
+# numerical attenuation around the fault
+&MATERIAL tag=2, kind='ELAST', 'KV' /
+&MAT_ELASTIC rho=1d0, cp=1.21247d0, cs=0.7d0 /
+&MAT_KV eta=0.1 /
+
+# Host rock
+&MATERIAL tag=3, kind='ELAST' /
+&MAT_ELASTIC rho=1d0, cp=1.7321d0, cs=1d0 /
+
+
+
+#----- Boundary conditions ---------------------
+&BC_DEF  tags = 5,6 , kind = 'DYNFLT' /
+&BC_DYNFLT friction='SWF','TWF', Szz=-2d0, Sxz=0.57d0, otd=0.002d0  /
+&BC_DYNFLT_SWF Dc=1d0, MuS=0.6d0, MuD=0.1d0 /
+&BC_DYNFLT_TWF MuS=0.6d0, MuD=0.1d0, Mu0=0.285d0, V=0.25d0, L=1d0 /
+
+&BC_DEF  tag = 1 , kind = 'ABSORB' /
+&BC_DEF  tag = 2 , kind = 'ABSORB' /
+&BC_DEF  tag = 3 , kind = 'ABSORB' /  
+&BC_DEF  tag = 4 , kind = 'DIRNEU' /  
+&BC_DIRNEU h='N', v='D' /
+
+
+
+#---- Time scheme settings ----------------------
+&TIME  TotalTime=45.01d0, dt=5.e-3, courant = 0.3d0, kind='leapfrog' / 
+
+#----- Receivers ---------------------------------
+# to have a header output file
+# isamp = 1, to derive the time step 
+&REC_LINE file='stations', isamp=1, field='V'/
+
+#--------- Plots settings ----------------------
+&SNAP_DEF itd=1000, fields ='V', components='x', ps=F /
+###
