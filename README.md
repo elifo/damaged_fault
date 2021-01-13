@@ -8,7 +8,7 @@ Palu earthquake, Geophysical Research Letters, [DOI](https://doi.org/10.1029/201
 ## Tutorial steps
 
 ### 1. Code 
-* Install and compile [`sem2dpack`](xxx) with seismogenic width option
+* Install and compile [`sem2dpack`](https://github.com/jpampuero/sem2dpack.git) with seismogenic width option
 
 
 ### 2. Example
