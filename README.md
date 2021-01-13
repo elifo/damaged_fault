@@ -20,3 +20,5 @@ Palu earthquake, Geophysical Research Letters, [DOI](https://doi.org/10.1029/201
 * To visulaise the simulation outputs, you can use the PY library in [`py-example`](py-example/)
 * If necessary, modify the patth to simulation, in [`plot_fault_data`](py-example/plot_fault_data.py)
 * Run the `plot_fault_data` to make plots of your choice. 
+
+For any questions, you can write to me; Check out my email address [here](https://elifo.github.io).
